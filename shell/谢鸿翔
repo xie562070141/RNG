@@ -1,0 +1,140 @@
+1.[root@desktop0 ~]# useradd -s /sbin/nologin tom
+  [root@desktop0 ~]# grep tom /etc/passwd 
+  [root@desktop0 ~]# usermod -s /bin/bash tom
+  [root@desktop0 ~]# grep tom /etc/passwd 
+
+2. $USER  :当前登陆的用户
+   $PWD   :当前路径
+   $UID   :当前用户的uid
+   $HOME  ：当前用户的家目录 
+   $SHELL ：当前用户的默认解释器
+   $MAIL  ：当前用户的邮件默认存放地址
+
+3.  将标准输出重定向到一个位置:           >
+    将错误输出重定向到一个位置:           2>
+    将标准输出重定向到/dev/null：      > /dev/null
+
+4.[root@desktop0 ~]# cat daxiao.sh 
+#!/bin/bash
+read -p "请输入第一个整数：" num1
+read -p "请输入第二个整数：" num2
+read -p "请输入第三个整数：" num3
+num=0
+if [ $num1 -gt $num2 ];then
+   num=$num1
+   num1=$num2
+   num2=$num
+fi
+if [ $num1 -gt $num3 ];then
+   num=$num1
+   num1=$num3
+   num3=$num 
+fi
+if [ $num2 -gt $num3 ];then
+   num=$num2
+   num2=$num3
+   num3=$num 
+fi  
+   echo $num1,$num2，$num3
+
+6.[root@desktop0 ~]# cat caiquan01.sh 
+#!/bin/bash
+read -p "请出拳(1石头2剪刀3布)：" x
+x1=1
+x2=2
+x3=3
+y=$[RANDOM%3+1]
+[ -z $x ]&& exit
+if [ $x -eq $y ];then
+echo "平局"
+#石头vs剪刀
+elif ([ $x -eq $x1 ]||[ $x -eq $x2 ])&&([ $y -eq $x1 ]||[ $y -eq $x2 ]);then
+     [ $x -eq $x1 ]&& echo "你赢" ||echo "电脑赢"
+#石头vs布
+elif ([ $x -eq $x1 ]||[ $x -eq $x3 ])&&([ $y -eq $x1 ]||[ $y -eq $x3 ]);then
+     [ $x -eq $x2 ]&& echo "你赢" ||echo "电脑赢"
+#剪刀vs布
+elif ([ $x -eq $x2 ]||[ $x -eq $x3 ])&&([ $y -eq $x2 ]||[ $y -eq $x3 ]);then
+     [ $x -eq $x3 ]&& echo "你赢" ||echo "电脑赢"
+else
+echo "输入错误"
+exit
+fi
+echo "电脑出的是$y"
+
+
+
+7.[root@desktop0 ~]# cat zhuangtai.sh 
+#!/bin/bash
+for i in {1..254}
+do
+ip="172.25.0.$i"
+    ping -c2 -i0.2 -W1 $ip&>/dev/null
+if [ $? -eq 0 ];then
+    echo "$ip up"
+else
+    echo "$ip down"
+fi
+done
+
+
+8.[root@desktop0 ~]# cat chengfa.sh
+#!/bin/bash
+for i in `seq 9`
+do
+    for j in `seq $i`
+  do 
+    echo -n "$i*$j=$[i*j] "
+  done
+    echo
+done 
+
+
+9.[root@desktop0 ~]# cat cpu.sh 
+#!/bin/bash
+grep vendor_id /proc/cpuinfo |grep Intel &>/dev/null
+if [ $? -eq 0 ];then
+echo "intel"
+else
+echo "AMD"
+fi
+
+
+10.[root@desktop0 ~]# cat ifconfig.sh 
+#!/bin/bash
+while :
+do
+clear
+ifconfig eth0| grep netmask
+ifconfig eth0 |grep "RX p"
+ifconfig eth0 |grep "TX p"
+sleep 1
+done
+
+
+
+11.[root@desktop0 ~]# cat user.sh
+#!/bin/bash
+for i in `cat user.txt`
+  do
+      useradd $i &>/dev/null 
+      echo 123456 |passwd --stdin $i >/dev/null
+  done
+
+12.#!/bin/bash
+for i in `ls *.txt`
+do
+mv $i ${i//txt/doc}
+done
+
+
+13.[root@desktop0 ~]# cat ecpect.sh 
+#!/bin/bash
+expect <<EOF
+spawn ssh -o StrictHostKeyChecking=no 172.25.0.11
+expect "password" {send "123456\n"}
+expect "#"      {send "yum -y install httpd\n"}
+expect "#"      {send "exit\n"}
+EOF 
+
+

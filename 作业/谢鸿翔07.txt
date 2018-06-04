@@ -1,0 +1,308 @@
+﻿
+案例练习,准备:
+            rht-vmctl  reset  classroom
+            rht-vmctl  reset  server
+	        rht-vmctl  reset  desktop
+########################################################################
+
+﻿案例1:为虚拟机 server0 配置以下永久静态地址参数
+– 主机名:server0.example.com
+– IP地址:172.25.0.110
+– 子网掩码:255.255.255.0
+– 默认网关:172.25.0.254
+– DNS服务器:172.25.254.254
+
+[root@server0 ~]# hostname
+server0.example.com
+[root@server0 ~]# nmcli connection modify "System eth0" ipv4.method manual  ipv4.addresses '172.25.0.11/24 172.25.0.254' ipv4.dns '172.25.254.254' connection.autoconnect yes
+[root@server0 ~]# nmcli connection up "System eth0" 
+
+
+
+案例2:为虚拟机 desktop0 配置以下永久静态地址参数
+– 主机名:desktop0.example.com
+– IP地址:172.25.0.120
+– 子网掩码:255.255.255.0
+– 默认网关:172.25.0.254
+– DNS服务器:172.25.254.254
+[root@desktop0~]# nmcli connection modify "System eth0" ipv4.method manual ipv4.addresses  '172.25.0.120/24 172.25.0.254' ipv4.dns 172.25.254.254 connection.autoconnect yes
+[root@desktop0 ~]# nmcli connection up "System eth0" 
+
+案例3:指定yum软件源
+为 server0 指定可用的 yum 软件源
+– YUM软件库的地址为 http://classroom.example.com/content/rhel7.0/x86_64/dvd
+– 将此配置为虚拟机 server0 的默认软件仓库
+– 确认可用的仓库列表
+– 利用yum仓库安装httpd与vsftpd
+[root@server0 ~]# rm -rf /etc/yum.repos.d/*
+[root@server0 ~]# ls /etc/yum.repos.d/
+[root@server0 ~]# yum-config-manager --add http://classroom.example.com/content/rhel7.0/x86_64/dvd 
+[root@server0 ~]# echo 'gpgcheck=0' >> classroom.example.com_content_rhel7.0_x86_64_dvd.repo
+[root@server0 ~]# yum repolist 
+[root@server0 ~]# yum -y install httpd
+[root@server0 ~]# yum -y install vsftpd
+
+
+案例4:指定yum软件源
+为 desktop0 指定可用的 yum 软件源
+– YUM软件库的地址为 http://classroom.example.com/content/rhel7.0/x86_64/dvd
+– 将此配置为虚拟机 server0 的默认软件仓库
+– 确认可用的仓库列表
+– 利用yum仓库安装httpd与vsftpd
+[root@server0 ~]# exit
+[root@room9pc01 ~]# ssh -X root@172.25.0.120
+[root@desktop0 ~]# rm -rf /etc/yum.repos.d/*
+[root@desktop0 ~]# yum-config-manager --add http://classroom.example.com/content/rhel7.0/x86_64/dvd
+[root@desktop0 ~]# echo 'gpgcheck=0' >> classroom.example.com_content_rhel7.0_x86_64_dvd.repo
+[root@desktop0 ~]# yum repolist 
+[root@desktop0 ~]# yum -y install httpd
+[root@desktop0 ~]# yum -y install vsftpd
+
+
+案例5：虚拟机 server0上操作，复制、粘贴、移动
+ 以root用户新建/nsddir/目录，在此目录下新建readme.txt文件，并进一步完成下列操作
+[root@server0 ~]# mkdir  /nsddir
+
+ 1）将“I love Linux”写入到文件readme.txt 
+[root@server0 ~]# echo “I love Linux” > /nsddir/readme.txt
+[root@server0 ~]# ls /nsddir
+[root@server0 ~]# cat /nsddir/readme.txt 
+
+ 2）将readme.txt重命名为mylove.txt
+[root@server0 ~]# mv /nsddir/readme.txt  /nsddir/mylove.txt
+[root@server0 ~]# ls /nsddir/f
+
+ 3）将/etc/passwd、/boot、/etc/group同时拷贝到/nsddir目录下
+[root@server0 ~]# cp -r /etc/passwd /boot/ /etc/group  /nsddir/
+[root@server0 ~]# ls /nsddir/
+
+ 4）将ifconfig命令的前两行内容，追加写入mylove.txt
+[root@server0 ~]# ifconfig  | head -2 >> mylove.txt
+[root@server0 ~]# cat mylove.txt
+
+ 5）将主机名永久配置文件，拷贝到/nsddir目录下
+[root@server0 /]# mkdir /etc/hostname
+[root@server0 /]# ls /etc/
+[root@server0 /]# cp /etc/hostname/  /nsddir/
+[root@server0 /]# ls /nsddir/
+
+
+ 6）将DNS永久配置文件，拷贝到/nsddir目录下
+[root@server0 /]# cp /etc/resolv.conf  /nsddir/
+[root@server0 /]# ls /nsddir/
+
+
+案例6：虚拟机Server上操作：复制、删除、移动及vim文本编辑器
+  1. 新建目录结构/nsd/test
+[root@server0 /]# mkdir -p /nsd/test
+  2. 在目录/nsd/test创建文件nsd.txt并写入内容 NSD  Student
+[root@server0 /]# echo NSD  Student > /nsd/test/nsd.txt
+[root@server0 /]# cat /nsd/test/nsd.txt
+
+  3. 将/nsd/test/nsd.txt文件复制到/root目录下，同时 改名为 tedu.txt
+[root@server0 /]# cp /nsd/test/nsd.txt  /root/tedu.txt
+[root@server0 /]# ls /root
+
+  4. 利用vim 修改文件/etc/hostname将其原有内容全部删除，写入新的内容为server0.example.com
+vim /etc/hostname
+i
+将其原有内容全部删除
+写入server0.example.com
+esc:wq
+  5. 将/etc/passwd 、/etc/resolv.conf、/etc/hostname 同时拷贝到/nsd/test/目录下
+[root@server0 ~]# cp /etc/passwd /etc/resolv.conf  /etc/hostname/ /nsd/test/
+  6. 将文件 /nsd/test/hostname 重改名为 hn.txt 
+[root@server0 ~]# mv /nsd/test/hostname/  /nsd/test/hn.txt
+[root@server0 ~]# ls /nsd/test
+
+  7. 创建目录结构/nsd/test/kernel
+[root@server0 ~]# mkdir /nsd/test/kernel
+
+  7. 将目录 /boot内容中以 vm 开头的 复制到/nsd/test/kernel目录下 
+
+[root@server0 ~]# cp /boot/vm*  /nsd/test/kernel/
+[root@server0 ~]# ls /nsd/test/kernel/
+
+
+案例7:虚拟机 server0上操作，查找并处理文件
+ – 创建目录 /root/findfiles/
+[root@server0 ~]# mkdir /root/findfiels
+
+ – 利用find查找所有用户 student 拥有的必须是文件,把它们拷贝到 /root/findfiles/ 文件夹中
+[root@server0 ~]# find / -user student -type f -exec cp {} /root/findfiles/  \;
+ – 利用find查找/boot目录下大于10M并且必须是文件，拷贝到/opt
+[root@server0 ~]# find  /boot/ -size +10M -type f -exec cp {} /opt/ \;
+[root@server0 ~]# ls /opt/
+-
+ – 利用find查找/boot/ 目录下以 vm 开头且必须是文件，拷贝到/opt
+[root@server0 ~]# find  /boot/ -name  "vm*" -type f -exec cp {} /opt/ \;
+[root@server0 ~]# ls /opt/
+
+ – 利用find查找/boot/ 目录下为快捷方式
+[root@server0 boot]# find /boot/ -type  l
+[root@server0 boot]# cd /boot/grub
+
+ – 利用find查找/etc 目录下，以 tab 作为结尾的 必须是文件
+[root@server0 /]# find /etc/ -name "*tab" -type f
+ – 利用find查找/etc 目录下，以 tab 作为结尾的 必须是文件
+[root@server0 /]# find /etc/ -name "*tab" -type f
+
+案例8:虚拟机 server0上操作,查找并提取文件内容
+1.在文件 /usr/share/dict/words 中查找到所有包含字符串 seismic 的行,将输出信息,写入到/opt/nsd18.txt
+[root@server0 /]# grep  seismic /usr/share/dict/words  >> /opt/nsd18.txt
+[root@server0 /]# cat /opt/nsd18.txt
+
+2.查看内核版本，将显示结果重定向到/root/version.txt
+[root@server0 /]# uname -r >> /root/version.txt
+[root@server0 /]# cat /root/version.txt
+
+3.查看红帽系统版本，将显示结果追加到/root/version.txt
+[root@server0 /]# cat /etc/redhat-release >> /root/version.txt 
+[root@server0 /]# cat /root/version.txt
+
+4.查看主机名将显示结果追加到/root/version.txt
+[root@server0 /]# hostname >> /root/version.txt 
+[root@server0 /]# cat /root/version.txt
+
+4.将/etc/fstab文件中以UUID开头的信息，写入到/root/fstab.txt
+[root@server0 /]# grep UUID* /etc/fstab >> /root/fstab.txt
+[root@server0 /]# cat /root/fstab.txt
+
+5.提取/etc/passwd以bash结尾的行，将其信息写入/opt/pass.txt
+[root@server0 /]# grep  bash$ /etc/passwd >> /opt/pass.txt
+[root@server0 /]# cat /opt/pass.txt
+
+6.复制/etc/login.defs文件到当前目录下，改名为init.txt	
+[root@server0 /]# cp /etc/login.defs  init.txt
+[root@server0 /]# ls
+
+7.提取init.txt文件里的有效配置（去除以#号开头，去除空行），保存为init2.txt
+[root@server0 /]# grep -v ^#  init.txt | grep -v ^$ > init2.txt 
+[root@server0 /]# cat init2.txt
+
+
+
+案例9:虚拟机 server0上操作,tar制作/释放归档压缩包（zcf、ztf、zxf、jcf、jtf、jxf、cf、tf）
+    1）备份/boot、/home这两个文件夹，保存为boothome.tar.gz文件
+[root@server0 ~]# tar  -zcf boothome.tar.gz /boot/ /home/
+
+    2）查看boothome.tar.gz文件内包含哪些内容 
+[root@server0 ~]# tar -ztf   boothome.tar.gz 
+
+    3）将boothome.tar.gz释放到文件夹/root/boothome/下
+[root@server0 ~]# tar -zxf boothome.tar.gz -C  /root/boothome
+
+    4）创建一个名为 /root/backup.tar.bz2 的归档文件，其中包含 /usr/local 目录中的内容
+[root@server0 ~]# tar -cjf  /root/backup.tar.bz2   /usr/local
+[root@server0 ~]# tar -tf /root/backup.tar.bz2 
+
+案例10:虚拟机 server0上操作
+	• 新建用户 alex，其用户ID为3456，密码是flectrag 
+[root@server0 ~]# useradd  -u 3456  alex
+ [root@server0 ~]# echo flectrag | passwd --stdin  alex
+
+	• 创建下列用户、组以及组的成员关系： 
+	 – 一个名为 adminuser 的组 
+[root@server0 ~]# groupadd  adminuser 
+
+	 – 一个名为 natasha 的用户，其属于 adminuser 组， 这个组是该用户的从属组 
+[root@server0 ~]# useradd -G adminuser natasha
+[root@server0 ~]# id natasha
+
+	 – 一个名为 harry 的用户，其属于 adminuser 组，这个 组是该用户的从属组
+[root@server0 ~]# useradd -G adminuser harry
+[root@server0 ~]# id harry
+ 
+	 – 一个名为 sarah 的用户，其在系统中没有可交互的 Shell（/sbin/nologin），并且不是 adminuser 组的成员 
+[root@server0 ~]# useradd -s /sbin/nologin  sarah
+[root@server0 ~]# id sarah
+
+	 – natasha 、harry、sarah 的密码都要设置为 flectra
+[root@server0 ~]# echo flectra | passwd --stdin  natasha
+[root@server0 ~]# echo flectra | passwd --stdin  harry
+[root@server0 ~]# echo flectra | passwd --stdin  sarah
+
+案例11：组账号基本管理
+    1）新建组账号stugrp
+[root@server0 ~]# groupadd stugrp
+
+    2）创建用户lily、zhangsan
+– 查看:crontab -l [-u 用户名]
+[root@server0 ~]# useradd lily
+[root@server0 ~]# useradd zhangsan
+
+    3）为stugrp组添加三个成员用户（lily、root、zhangsan）
+[root@server0 ~]# gpasswd -M lily,root,zhangsan stugrp
+[root@server0 ~]# grep stugrp /etc/group
+
+    4）从stugrp组删除一个成员（lily）
+[root@server0 ~]# gpasswd -d lily stugrp
+[root@server0 ~]# grep stugrp /etc/group
+
+案例12：配置NTP网络时间客户端
+	配置虚拟机 server0，自动校对系统时间
+	NTP服务器位于 classroom.example.com 
+	此客户机的时间与NTP服务器的时间保持同步
+[root@server0 ~]# yum -y install chrony
+[root@server0 ~]# rpm -q chrony
+[root@server0 ~]# vim  /etc/chrony.conf 
+	#server 0.rhel.pool.ntp.org iburst   
+	#server 1.rhel.pool.ntp.org iburst   
+	#server 2.rhel.pool.ntp.org iburst   
+	server classroom.example.com iburst  
+systemctl restart chronyd 
+systemctl enable chronyd 
+date
+ 
+
+案例13:虚拟机 server0上操作
+    为用户 natasha 配置一个定时任务 
+	– 每天在本地时间 14:23 执行 
+	– 需要完成的任务操作为 /bin/echo  hiya
+[root@server0 ~]# crontab -e -u natasha
+i
+23 14 * * *  /bin/echo  hiya
+esc:wq
+案例14：权限设置
+    1）新建/class目录
+[root@server0 ~]# mkdir /class
+
+	a）将属主设为zhangsan，属组设为stugrp组
+[root@server0 ~]# chown  zhangsan:stugrp /class/
+[root@server0 ~]# ls -ld /class/
+
+	b）使用户zhangsan对此目录具有rwx权限，其他人对此目录无任何权限
+[root@server0 ~]# chmod  o=--- /class/
+[root@server0 ~]# ls -ld /class/
+
+    2）使用户lily能进入、查看/class文件夹（提示：将lily加入所属组）
+[root@server0 ~]# gpasswd -a  lily stugrp
+
+    3）新建/server0目录
+[root@server0 ~]# mkdir /server0
+
+	a）将属组设为stugrp
+[root@server0 ~]# chown :stugrp /server0
+[root@server0 ~]# ls -ld /server0
+
+	b）使stugrp组的任何用户都能在此目录下创建、删除文件
+[root@server0 ~]# chmod  g+w /server0
+[root@server0 ~]# ls -ld  /server0
+
+    4）新建/tarena/public目录
+[root@server0 ~]# mkdir -p /tarena/public
+
+	a）使任何用户对此目录都有rwx权限
+[root@server0 ~]# chmod  go=rwx /tarena/public
+[root@server0 ~]# ls -ld /tarena/public
+	b）拒绝zhangsan进入此目录，对此目录无任何权限
+[root@server0 ~]# setfacl  -m u:zhangsan:--- /tarena/public
+[root@server0 ~]# getfacl /tarena/public
+
+        C) 任何其他用户，在此目录下不得删除非本人的文档
+
+[root@server0 ~]# chmod  o+t /tarena/public/
+
+
+
+

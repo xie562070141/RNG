@@ -1,0 +1,229 @@
+==========================
+nmcli  rpm     hostname
+==========================
+    1  exit
+    2  echo  redhat | passwd  --stdin root
+    3  touch   /.autorelabel
+    4  exit
+    5  wget http://classroom.example.com/content/rhel7.0/x86_64/errata/Packages/kernel-3.10.0-123.1.2.el7.x86_64.rpm
+    6  systemctl  stop firewalld.service 
+    7  systemctl  disable firewalld.service 
+    8  ls
+    9  ls /boot/
+   10  uname  -r
+   11  ls
+   12  ls /boot/
+   13  ls
+   14  rpm -ivh  kernel-3.10.0-123.1.2.el7.x86_64.rpm 
+   15  ls /boot/
+   16  uname  -r
+   17  reboot 
+   18  pwd
+   19  cd
+   20  cat /etc/hostname
+   21  hostname
+   22  hostnamectl  set-hostname  server0.example.com
+   23  cat /etc/hostname
+   24  ifconfig 
+   25  ping 172.25.0.11
+   26  cat /etc/sysconfig/network-scripts/ifcfg-eth0 
+   27  nmcli connection modify  "System eth0"  ipv4.method  manual ipv4.addresses  "172.25.0.11/24  172.25.0.254"  ipv4.dns 172.25.254.254 connection.autoconnect  yes
+   28  nmcli connection up "System eth0"
+   29  cat /etc/sysconfig/network-scripts/ifcfg-eth0 
+   30  cat /etc/resolv.conf 
+   31  route -n
+   32  uname -r
+   33  ls /boot/
+==========================
+fdisk   extend   lvs  vgs
+==========================
+   35  fdisk  /dev/vdb
+   36  fdisk  -l 
+   37  pvs
+   38  vgs
+   39  lvs
+   40  vgcreate  systemvg  /dev/vdb1
+   41  vgs
+   42  pvs
+   43  lvs
+   45  lvcreate  -L 196M  -n vo  systemvg 
+   46  lvs
+   47  mkdir /vo
+   48  mkfs.ext3  /dev/systemvg/vo 
+   49  blkid /dev/systemvg/vo
+   50  vim /etc/fstab 
+   51  mount -a
+   52  df -h
+   53  vgs
+   54  vgextend  systemvg /dev/vdb2
+   55  vgs
+   56  pvs
+   57  lvs
+   60  lvextend  -L 300M  /dev/systemvg/vo
+   61  lvs
+   62  df -h
+   63  resize2fs   /dev/systemvg/vo 
+   64  df -h
+   65  vgcreate  -s 16M datastore  /dev/vdb3
+   66  vgs
+   67  vgdisplay  | grep datastore
+   68  vgdisplay
+   69  lvcreate  -l 50 -n database  datastore
+   70  lvs
+   71  lvdisplay 
+   72  mkdir /mnt/database
+   73  mkfs.ext3  /dev/datastore/database 
+   74  vim /etc/fstab 
+   75  mount  -a
+   76  df -h
+   77  reboot 
+==========================
+yum
+==========================
+   78  rm  -rf  /etc/yum.repos.d/*
+   79  yum-config-manager  --add http://content.example.com/rhel7.0/x86_64/dvd
+   80  echo 'gpgcheck=0' >> /etc/yum.repos.d/content.example.com_rhel7.0_x86_64_dvd.repo 
+   81  yum clean all
+   82  yum repolist
+==========================
+group  user
+==========================
+   83  groupadd  adminuser
+   84  useradd  -G adminuser  natasha
+   85  useradd  -G adminuser  harry
+   86  useradd  -s  /sbin/nologin  sarah
+   87  useradd  -u 3456 alex
+   89  echo 'flectrag' | passwd  --stdin natasha,harry
+   90  echo 'flectrag' | passwd  --stdin natasha
+   91  echo 'flectrag' | passwd  --stdin harry
+   93  echo 'flectrag' | passwd  --stdin alex
+   94  ssh alex@localhost
+   96  su - alex
+==========================
+acl  crontab
+==========================
+  103  cp  /etc/fstab   /var/tmp/
+  104  cd /var/tmp/
+  105  ls
+  106  ll fstab 
+  107  getfacl  fstab 
+  109  setfacl  -m  u:natasha:rw- fstab 
+  110  setfacl  -m  u:harry:--- fstab 
+  111  getfacl  fstab 
+  112  ls /var/spool/cron/
+  113  crontab  -u natasha -e
+  114  vim /var/spool/cron/natasha
+  115  ls /var/spool/cron/
+  116  crontab  -u natasha -e
+==========================
+chown  chmod
+==========================
+  117  mkdir /home/admins
+  118  cd /home/
+  119  ls -d admins/
+  120  ls -ld admins/
+  121  chown   :adminuser  admins
+  122  ls -ld admins/
+  123  chmod  2070 admins
+  124  ls -ld admins/
+  125  cd admins/
+  126  ls
+  127  touch  aa
+  128  ll
+  129  rm aa 
+
+==========================
+swap
+==========================
+  130  fdisk  /dev/vdb
+  137  partprobe  /dev/vdb
+  138  ls /dev/vdb*
+  142  mkswap  /dev/vdb5
+  143  vim /etc/fstab 
+  146  free  -m
+  147  swapon  -a
+  148  free  -m
+  149  swapon  -s
+  150  swapoff  -a
+  151  swapon  -s
+  152  swapon  -a
+  153  swapon  -s
+==========================
+find
+==========================
+  154  mkdir /root/findfiles
+  155  find  /  -type  f  -user student
+  156  cd /root/findfiles/
+  158  ll -a
+
+==========================
+grep 
+==========================
+  162  grep  seismic  /usr/share/dict/words >  /root/wordlist
+  163  grep  seismic  /usr/share/dict/words|grep -v "^#" >  /root/wordlist
+
+==========================
+tar  bzip2
+==========================
+  167  tar -jcvPf  /root/backup.tar.bz2  /usr/local
+  168  tar -jcPf  /root/backup11.tar.bz2  /usr/local
+  169  tar -jcvf  /root/backup22.tar.bz2  /usr/local
+
+==========================
+ntp
+==========================
+
+  170  yum install chrony -y
+  171  vim /etc/chrony.conf 
+  172  systemctl  restart chronyd
+  173  systemctl  enable chronyd
+  174  systemctl  status chronyd
+  175  date 
+  176  timedatectl  set-ntp  true 
+  177  timedatectl  
+  178  date  -s "1989-1-1 00:00:00"
+  179  date 
+  180  history 
+  181  date 
+  182  timedatectl  
+  183  date 
+
+==========================
+ldap  sssd
+==========================
+  188  yum install sssd -y
+  189  authconfig-tui 
+  190  cd /etc/openldap/
+  191  ls
+  192  cd cacerts/
+  193  ls
+  194  pwd
+  195  wget http://classroom.example.com/pub/example-ca.crt  -O  /etc/openldap/cacerts/example-ca.crt
+  196  ls
+  198  systemctl  restart sssd
+  199  ssh ladpuser0@server0
+  200  cd 
+  201  su - ldapuser0
+  202  id ldapuser0
+
+====================================
+autofs 
+====================================  
+  251  mkdir  /home/guests
+  252  yum install autofs -y
+  253  date 
+  254  ls
+  255  vim /etc/auto.master
+  256  vim /etc/auto.jj
+  257  systemctl  restart autofs
+  258  systemctl  enable autofs
+  259  su - ldapuser0
+  260  su - ldapuser3
+  261  ls  /home/guests/
+  262  vim /etc/auto.jj 
+  263  systemctl  restart autofs
+  264  ls /home/guests/
+  265  su - ldapuser5
+  266  ls /home/guests/
+  267  su - ldapuser8
+  268  ls /home/guests/

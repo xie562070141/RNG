@@ -1,0 +1,16 @@
+1. [root@server0 ~]# cat -n data.txt | sed -n '/San/p'
+2.[root@server0 ~]# sed -n '/^J/p' data.txt 
+3. [root@server0 ~]# cat -n data.txt | sed -n '/700$/p'
+4.[root@server0 ~]# cat -n data.txt | sed -n '/834/!p'
+5.[root@server0 ~]# cat -n data.txt | sed -n '/:834-/p'
+7.[root@server0 ~]# sed -n '/^[Kk]/p' data.txt 
+8.[root@server0 ~]# sed -n '/[0-9]\{6\}$/p' data.txt 
+9.[root@server0 ~]# sed -n '/[Ll]incoln/p' data.txt
+                    sed -r -n '/(Lincoln|lincoln)/p'  data.txt  
+10.[root@server0 ~]# sed -n  's/Jon/Jonathan/p' data.txt 
+11.[root@server0 ~]# cat -n data.txt |sed '1,3d'
+12.[root@server0 ~]# cat -n data.txt |sed -n '5,10p'
+13.[root@server0 ~]# sed -n '/Fred/s/^/***/p' data.txt 
+14.[root@server0 ~]# sed  '/^$/d' data.txt |wc -l
+
+

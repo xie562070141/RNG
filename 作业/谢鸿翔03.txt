@@ -1,0 +1,28 @@
+
+yum仓库搭建（每人手抄写20次）
+服务端、客户端
+服务端：（http、ftp、file）存放软件以及软件清单。提供可访问的路径。
+
+客户端：配置文件指定软件仓库路径以及是否可用跟key文件。
+
+服务端：
+1、创建存放软件的目录
+   mkdir  /abcyum
+2、存放软件到仓库目录。
+   ①.mount  /iso/rhel7.4.iso  /abcyum  [iso已经写好软件清单]
+   ②.cp  *.rpm  /abcyum  [将软件拷贝过去]
+      createrepo  /abcyum  [手工创建软件清单]
+
+客户端：
+1、编写配置文件。[文件必须以.repo，存放在 /etc/yum.repos.d/ 目录下]
+①.yum-config-manager  --add file:///abcyum
+   echo  'gpgcheck=0' >> /etc/yum.repos.d/abcyum.repo
+②.vim  /etc/yum.repos.d/a.repo
+[abcyum]
+name=dvd
+baseurl=file:///abcyum
+enabled=1
+gpgcheck=0
+
+
+
